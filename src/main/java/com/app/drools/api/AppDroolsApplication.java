@@ -1,5 +1,8 @@
 package com.app.drools.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -16,9 +19,10 @@ public class AppDroolsApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AppDroolsApplication.class, args);
-
 		
-		FactHandle f1, f2, f3;
+		//List<Integer> ruleFiredList = new ArrayList<>();
+
+		/*FactHandle f1, f2, f3;
 
 		try {
 			// load up the knowledge base
@@ -31,10 +35,13 @@ public class AppDroolsApplication {
 			p1.setMade("us");
 
 			kSession.insert(p1);
+			
 			kSession.addEventListener(new TrackingAgendaEventListener());
 			kSession.fireAllRules();
-			System.out.println("The discount for given input : " +p1+ " is " +p1.getDiscount());
-			//System.out.println();
+			kSession.getAgendaEventListeners().size();
+			ruleFiredList.add(p1.getRule());
+			System.out.println("The discount for given input : " + p1 + " is " + p1.getDiscount());
+			// System.out.println();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -52,13 +59,19 @@ public class AppDroolsApplication {
 			p2.setMade("uk");
 
 			f2 = kSession.insert(p2);
+			
 			kSession.addEventListener(new TrackingAgendaEventListener());
 			kSession.fireAllRules();
-System.out.println("The discount for given input : " +p2+ " is " +p2.getDiscount());
+			ruleFiredList.add(p2.getRule());
+			System.out.println("The discount for given input : " + p2 + " is " + p2.getDiscount());
+			//for(Integer ruleId: ruleFiredList) {
+				System.out.println(ruleFiredList.toString());
+			//}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
+	}*/
 	}
 
 	@Bean

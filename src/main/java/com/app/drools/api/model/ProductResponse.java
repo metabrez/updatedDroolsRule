@@ -1,11 +1,13 @@
 package com.app.drools.api.model;
 
-public class Product {
+import java.util.List;
 
-    private String type;
+public class ProductResponse {
+	
+	private String type;
     private String quality;
     private String made;
-    private int rule;
+    private List<Integer> rule;
    
     public String getQuality() {
 		return quality;
@@ -26,11 +28,11 @@ public class Product {
 	private int discount;
   //  private String ruleName;
 
-    public Product() {
+    public ProductResponse() {
 
     }
 
-    public Product(String type, int discount) {
+    public ProductResponse(String type, int discount) {
         this.type = type;
         this.discount = discount;
     }
@@ -57,13 +59,12 @@ public class Product {
 				+ discount + "]";
 	}
 
-	public int getRule() {
+	public List<Integer> getRule() {
 		return rule;
 	}
 
-	public void setRule(int rule) {
+	public void setRule(List<Integer> rule) {
 		this.rule = rule;
 	}
-    
 
 }

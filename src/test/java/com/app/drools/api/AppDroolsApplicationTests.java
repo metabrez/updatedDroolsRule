@@ -1,4 +1,4 @@
-package com.app.drools.api;
+/*package com.app.drools.api;
 
 import com.app.drools.api.config.DroolsConfig;
 import com.app.drools.api.listener.TrackingAgendaEventListener;
@@ -47,3 +47,4 @@ public class AppDroolsApplicationTests {
         assertEquals(product.getDiscount(), 25);
     }
 }
+*/

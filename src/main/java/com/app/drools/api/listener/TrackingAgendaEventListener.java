@@ -15,72 +15,98 @@ import org.kie.api.event.rule.AfterMatchFiredEvent;
 import org.kie.api.runtime.rule.Match;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.app.drools.api.model.Product;
+
 /**
  * @author Tabrez
  *
  */
-public class TrackingAgendaEventListener extends DefaultAgendaEventListener  {
 
-    private static Logger log = LoggerFactory.getLogger(TrackingAgendaEventListener.class);
+//@Component
+public class TrackingAgendaEventListener extends DefaultAgendaEventListener {
 
-    private List<Match> matchList = new ArrayList<Match>();
+	private static Logger log = LoggerFactory.getLogger(TrackingAgendaEventListener.class);
 
-    @Override
-    public void afterMatchFired(AfterMatchFiredEvent event) {
-        Rule rule = event.getMatch().getRule();
+	private List<Match> matchList = new ArrayList<Match>();
+	
+	private List<Integer> ruleId = new ArrayList<>();
 
-        String ruleName = rule.getName();
-        Map<String, Object> ruleMetaDataMap = rule.getMetaData();
+	@Override
+	public void afterMatchFired(AfterMatchFiredEvent event) {
+		Rule rule = event.getMatch().getRule();
+		
+		String ruleName = rule.getName();
+		String idName=rule.getId();
+		//activationList.add(ruleName);
+		//System.out.println(idName);
+		//System.out.println();
 
-        matchList.add(event.getMatch());
-        StringBuilder sb = new StringBuilder("Rule fired: " + ruleName);
-        
-        
-        
-      
-        if (ruleMetaDataMap.size() > 0) {
-            sb.append("\n  With [" + ruleMetaDataMap.size() + "] meta-data:");
-            for (String key : ruleMetaDataMap.keySet()) {
-                sb.append("\n    key=" + key + ", value="
-                        + ruleMetaDataMap.get(key));
-            }
-        }
+		Map<String, Object> ruleMetaDataMap = rule.getMetaData();
 
-        System.out.println(sb.toString());
-        //sb = null;
-        log.debug(sb.toString());
-        
-       // System.out.println("MatchedList" +getMatchList());
-        //System.out.println("MatchedList" +matchsToString());
-    }
+		matchList.add(event.getMatch());
+		List<Object> objects = event.getMatch().getObjects();
+		for(Object o: objects) {
+			Product p = (Product)o;
+			System.out.println(p.toString());
+			ruleId.add(p.getRule());
+		}
+		//System.out.println(matchList.toString());
+		StringBuilder sb = new StringBuilder("Rule fired: " + ruleName);
+		
 
-    public boolean isRuleFired(String ruleName) {
-        for (Match a : matchList) {
-            if (a.getRule().getName().equals(ruleName)) {
-                return true;
-            }
-        }
-        return false;
-    }
+		if (ruleMetaDataMap.size() > 0) {
+			sb.append("\n  With [" + ruleMetaDataMap.size() + "] meta-data:");
+			for (String key : ruleMetaDataMap.keySet()) {
+				sb.append("\n    key=" + key + ", value=" + ruleMetaDataMap.get(key));
+			}
+		}
+		
+	//System.out.println(sb.toString());
+		// sb = null;
+		log.debug(sb.toString());
+		
+		//System.out.println("Mathches2" +matchList);
+		
+		
+		//System.out.println("Matches1:" +matchsToString());
+		
+		//System.out.println("Mathches3" +getMatchList());
 
-    public void reset() {
-        matchList.clear();
-    }
+	}
+	
+	public List<Integer> getRuleId(){
+		return ruleId;
+	}
 
-    public final List<Match> getMatchList() {
-        return matchList;
-    }
+	public boolean isRuleFired(String ruleName) {
+		for (Match a : matchList) {
+			if (a.getRule().getName().equals(ruleName)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    public String matchsToString() {
-        if (matchList.size() == 0) {
-            return "No matchs occurred.";
-        } else {
-            StringBuilder sb = new StringBuilder("Matchs: ");
-            for (Match match : matchList) {
-                sb.append("\n  rule: ").append(match.getRule().getName());
-            }
-            return  sb.toString();
-        }
-    }
+	public void reset() {
+		matchList.clear();
+	}
+
+	public final List<Match> getMatchList() {
+		return matchList;
+	}
+
+	public String matchsToString() {
+		if (matchList.size() == 0) {
+			return "No matchs occurred.";
+		} else {
+			StringBuilder sb = new StringBuilder("Matchs: ");
+			for (Match match : matchList) {
+				sb.append("\n  rule: ").append(match.getRule().getName());
+			}
+			return sb.toString();
+		}
+	}
 
 }
