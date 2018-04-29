@@ -46,10 +46,11 @@ public class TrackingAgendaEventListener extends DefaultAgendaEventListener {
 		Map<String, Object> ruleMetaDataMap = rule.getMetaData();
 
 		matchList.add(event.getMatch());
+		
 		List<Object> objects = event.getMatch().getObjects();
 		for(Object o: objects) {
 			Product p = (Product)o;
-			System.out.println(p.toString());
+			//System.out.println(p.toString());
 			ruleId.add(p.getRule());
 		}
 		//System.out.println(matchList.toString());
@@ -63,16 +64,11 @@ public class TrackingAgendaEventListener extends DefaultAgendaEventListener {
 			}
 		}
 		
-	//System.out.println(sb.toString());
+	System.out.println(sb.toString());
 		// sb = null;
 		log.debug(sb.toString());
 		
-		//System.out.println("Mathches2" +matchList);
-		
-		
-		//System.out.println("Matches1:" +matchsToString());
-		
-		//System.out.println("Mathches3" +getMatchList());
+	//	System.out.println("MatchList: " +matchList);
 
 	}
 	

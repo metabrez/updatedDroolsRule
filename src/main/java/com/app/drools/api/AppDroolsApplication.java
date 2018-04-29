@@ -20,7 +20,7 @@ public class AppDroolsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AppDroolsApplication.class, args);
 		
-		//List<Integer> ruleFiredList = new ArrayList<>();
+		List<Integer> ruleFiredList = new ArrayList<>();
 
 		/*FactHandle f1, f2, f3;
 

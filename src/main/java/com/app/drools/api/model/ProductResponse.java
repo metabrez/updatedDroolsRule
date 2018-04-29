@@ -7,6 +7,8 @@ public class ProductResponse {
 	private String type;
     private String quality;
     private String made;
+    private String price;
+    
     private List<Integer> rule;
    
     public String getQuality() {
@@ -55,8 +57,8 @@ public class ProductResponse {
 
 	@Override
 	public String toString() {
-		return "Product [type=" + type + ", quality=" + quality + ", made=" + made + ", rule=" + rule + ", discount="
-				+ discount + "]";
+		return "ProductResponse [type=" + type + ", quality=" + quality + ", made=" + made + ", price=" + price
+				+ ", rule=" + rule + ", discount=" + discount + "]";
 	}
 
 	public List<Integer> getRule() {
@@ -65,6 +67,14 @@ public class ProductResponse {
 
 	public void setRule(List<Integer> rule) {
 		this.rule = rule;
+	}
+
+	public String getPrice() {
+		return price;
+	}
+
+	public void setPrice(String price) {
+		this.price = price;
 	}
 
 }

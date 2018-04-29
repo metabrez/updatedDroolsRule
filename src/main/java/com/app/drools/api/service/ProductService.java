@@ -9,4 +9,8 @@ public interface ProductService {
     void applyDiscount(Product product);
     
     List<Integer> getRuleIdList();
+    
+public Product save(Product product);
+	
+	public List<Product> findAll();
 }

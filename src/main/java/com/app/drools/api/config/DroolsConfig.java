@@ -1,4 +1,4 @@
-package com.app.drools.api.config;
+/*package com.app.drools.api.config;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -30,3 +30,4 @@ public class DroolsConfig {
         return kieContainer.newKieSession();
     }
 }
+*/

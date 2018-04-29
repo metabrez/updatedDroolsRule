@@ -2,6 +2,7 @@ package com.app.drools.api.service;
 
 import com.app.drools.api.listener.TrackingAgendaEventListener;
 import com.app.drools.api.model.Product;
+import com.app.drools.api.repo.ProductRepo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,37 +16,50 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
+	@Autowired
+	private ProductRepo productRepo;
 	private KieContainer kieContainer;
-   // private final KieSession kSession;
-	
-	private List<Integer> ruleIdList;
-    
-    @Autowired
-    public ProductServiceImpl(KieContainer kieContainer){
-        this.kieContainer = kieContainer;
-        
-    }
+	// private final KieSession kSession;
 
-    @Override
-    public void applyDiscount(Product product) {
-    	KieSession kSession=kieContainer.newKieSession("ksession-rule");
-    	AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
-        kSession.insert(product);
-        kSession.addEventListener(trackingAgendaEventListener);
-       int firedRules= kSession.fireAllRules();
-       //System.out.println(" Total number of Fired Rules are : " + firedRules);
-       
-       ruleIdList = ((TrackingAgendaEventListener)trackingAgendaEventListener).getRuleId();
-       
-        kSession.dispose();
-       
-    }
+	private List<Integer> ruleIdList;
+
+	@Autowired
+	public ProductServiceImpl(KieContainer kieContainer) {
+		this.kieContainer = kieContainer;
+
+	}
+
+	@Override
+	public void applyDiscount(Product product) {
+		KieSession kSession = kieContainer.newKieSession("ksession-rule");
+		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
+		kSession.insert(product);
+		kSession.addEventListener(trackingAgendaEventListener);
+		int firedRules = kSession.fireAllRules();
+		System.out.println(" Total number of Fired Rules are : " + firedRules);
+
+		ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
+
+		kSession.dispose();
+
+	}
 
 	@Override
 	public List<Integer> getRuleIdList() {
-		// TODO Auto-generated method stub
 		return ruleIdList;
+	}
+
+	@Override
+	public Product save(Product product) {
+		
+		return productRepo.save(product);
+		
+	}
+
+	@Override
+	public List<Product> findAll() {
+		return productRepo.findAll();
 	}
 }
