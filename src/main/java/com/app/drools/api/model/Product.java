@@ -1,8 +1,14 @@
 package com.app.drools.api.model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Product {
@@ -13,6 +19,10 @@ public class Product {
 	private String quality;
 	private String made;
 	private String price;
+	//@DateTimeFormat(pattern="dd-mm-yyyy")
+	@JsonFormat
+    (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	private Date purchasedDate;
 	private int rule;
 
 	public String getQuality() {
@@ -59,11 +69,7 @@ public class Product {
 		this.discount = discount;
 	}
 
-	@Override
-	public String toString() {
-		return "Product [type=" + type + ", quality=" + quality + ", made=" + made + ", price=" + price + ", rule="
-				+ rule + ", discount=" + discount + "]";
-	}
+	
 
 	public int getRule() {
 		return rule;
@@ -79,6 +85,20 @@ public class Product {
 
 	public void setPrice(String price) {
 		this.price = price;
+	}
+
+	public Date getPurchasedDate() {
+		return purchasedDate;
+	}
+
+	public void setPurchasedDate(Date purchasedDate) {
+		this.purchasedDate = purchasedDate;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", type=" + type + ", quality=" + quality + ", made=" + made + ", price=" + price
+				+ ", purchasedDate=" + purchasedDate + ", rule=" + rule + ", discount=" + discount + "]";
 	}
 
 }

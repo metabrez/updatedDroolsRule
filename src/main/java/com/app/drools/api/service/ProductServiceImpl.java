@@ -35,7 +35,10 @@ public class ProductServiceImpl implements ProductService {
 	public void applyDiscount(Product product) {
 		KieSession kSession = kieContainer.newKieSession("ksession-rule");
 		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
+		
 		kSession.insert(product);
+		// read excel data (date) from kSession and compare with product.purchaseDate.
+		
 		kSession.addEventListener(trackingAgendaEventListener);
 		int firedRules = kSession.fireAllRules();
 		System.out.println(" Total number of Fired Rules are : " + firedRules);
