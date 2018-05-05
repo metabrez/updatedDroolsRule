@@ -13,7 +13,7 @@ public class ProductResponse {
     private String quality;
     private String made;
     private String price;
-   // @DateTimeFormat(pattern="dd-mm-yyyy")
+   @DateTimeFormat(pattern="dd-mm-yyyy")
     @JsonFormat
     (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date purchasedDate;

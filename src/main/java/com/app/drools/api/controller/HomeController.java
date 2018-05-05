@@ -4,8 +4,11 @@ import com.app.drools.api.listener.TrackingAgendaEventListener;
 import com.app.drools.api.model.Product;
 import com.app.drools.api.model.ProductResponse;
 import com.app.drools.api.service.ProductService;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.annotations.ApiParam;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,11 +17,14 @@ import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,7 +56,7 @@ public class HomeController {
 			/* @ApiParam(value = "Value for Product Type", required = true) */
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
 			@RequestParam(required = true) String made, @RequestParam(required = true) String price,
-			@RequestParam(required = true)  Date purchasedDate) {
+			@RequestParam(required = true)  @JsonFormat (shape=JsonFormat.Shape.STRING,pattern="dd-MM-yyyy")Date purchasedDate) {
 		Product product = new Product();
 		product.setType(type);
 		product.setQuality(quality);
@@ -91,5 +97,12 @@ public class HomeController {
 		p.setDiscount(p.getDiscount());
 		productService.applyDiscount(p);
 		return productService.findAll();
+	}
+	
+	@InitBinder
+	public void initBinder(final WebDataBinder binder) {
+		
+		final SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,true));
 	}
 }
