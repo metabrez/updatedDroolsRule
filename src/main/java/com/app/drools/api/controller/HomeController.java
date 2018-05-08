@@ -55,14 +55,21 @@ public class HomeController {
 	public ResponseEntity<ProductResponse> getDiscount(
 			/* @ApiParam(value = "Value for Product Type", required = true) */
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
-			@RequestParam(required = true) String made, @RequestParam(required = true) String price,
-			@RequestParam(required = true)  @JsonFormat (shape=JsonFormat.Shape.STRING,pattern="dd-MM-yyyy")Date purchasedDate) {
+			@RequestParam(required = true) String made, @RequestParam(value="price",required = false) Integer price,
+			@RequestParam(value="purchasedDate",required = false)
+		  Date purchasedDate) {
+		
+		if(price==null) {
+			
+			price=0;
+		}
 		Product product = new Product();
 		product.setType(type);
 		product.setQuality(quality);
 		product.setMade(made);
 		product.setPrice(price);
 		product.setPurchasedDate(purchasedDate);
+		System.out.println("Date Printing" +product.getPurchasedDate());
 
 		productService.applyDiscount(product);
 
@@ -93,6 +100,7 @@ public class HomeController {
 		p.setMade(p.getMade());
 		p.setPrice(p.getPrice());
 		p.setPurchasedDate(p.getPurchasedDate());
+		
 		p.setRule(p.getRule());
 		p.setDiscount(p.getDiscount());
 		productService.applyDiscount(p);
@@ -102,7 +110,8 @@ public class HomeController {
 	@InitBinder
 	public void initBinder(final WebDataBinder binder) {
 		
-		final SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
+		 SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
+		dateFormat.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,true));
 	}
 }

@@ -1,5 +1,6 @@
 package com.app.drools.api.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -18,8 +19,11 @@ public class Product {
 	private String type;
 	private String quality;
 	private String made;
-	private String price;
-	@DateTimeFormat(pattern="dd-mm-yyyy")
+	private int price;
+	
+	 SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
+
+	//@DateTimeFormat(pattern="dd-MM-yyyy")
 	@JsonFormat
     (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date purchasedDate;
@@ -79,11 +83,11 @@ public class Product {
 		this.rule = rule;
 	}
 
-	public String getPrice() {
+	public int getPrice() {
 		return price;
 	}
 
-	public void setPrice(String price) {
+	public void setPrice(int price) {
 		this.price = price;
 	}
 
