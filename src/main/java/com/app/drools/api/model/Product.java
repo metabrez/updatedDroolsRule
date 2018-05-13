@@ -26,8 +26,8 @@ public class Product {
 	// SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 
 	//@DateTimeFormat(pattern="dd-MM-yyyy")
-	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-	// @Temporal(TemporalType.TIMESTAMP)
+	// @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	 
 	private String purchasedDate;
 	private int rule;
 
