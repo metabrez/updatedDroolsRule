@@ -52,6 +52,7 @@ public class TrackingAgendaEventListener extends DefaultAgendaEventListener {
 			Product p = (Product)o;
 			//System.out.println(p.toString());
 			ruleId.add(p.getRule());
+			System.out.println("Rule:" +ruleId);
 		}
 		//System.out.println(matchList.toString());
 		StringBuilder sb = new StringBuilder("Rule fired: " + ruleName);
@@ -64,7 +65,7 @@ public class TrackingAgendaEventListener extends DefaultAgendaEventListener {
 			}
 		}
 		
-	System.out.println(sb.toString());
+	//System.out.println(sb.toString());
 		// sb = null;
 		log.debug(sb.toString());
 		

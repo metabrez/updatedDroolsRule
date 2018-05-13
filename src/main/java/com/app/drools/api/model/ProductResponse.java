@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -15,9 +18,9 @@ public class ProductResponse {
     private String made;
     private int price;
  // @DateTimeFormat(pattern="dd-MM-yyyy")
-   @JsonFormat
-    (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private Date purchasedDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+   // @Temporal(TemporalType.TIMESTAMP)
+    private String purchasedDate;
     private List<Integer> rule;
    
     public String getQuality() {
@@ -82,11 +85,11 @@ public class ProductResponse {
 		this.price = price;
 	}
 
-	public Date getPurchasedDate() {
+	public String getPurchasedDate() {
 		return purchasedDate;
 	}
 
-	public void setPurchasedDate(Date purchasedDate) {
+	public void setPurchasedDate(String purchasedDate) {
 		this.purchasedDate = purchasedDate;
 	}
 

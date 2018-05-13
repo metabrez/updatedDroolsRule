@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,12 +23,12 @@ public class Product {
 	private String made;
 	private int price;
 	
-	 SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
+	// SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 
 	//@DateTimeFormat(pattern="dd-MM-yyyy")
-	@JsonFormat
-    (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-	private Date purchasedDate;
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	// @Temporal(TemporalType.TIMESTAMP)
+	private String purchasedDate;
 	private int rule;
 
 	public String getQuality() {
@@ -91,11 +93,11 @@ public class Product {
 		this.price = price;
 	}
 
-	public Date getPurchasedDate() {
+	public String getPurchasedDate() {
 		return purchasedDate;
 	}
 
-	public void setPurchasedDate(Date purchasedDate) {
+	public void setPurchasedDate(String purchasedDate) {
 		this.purchasedDate = purchasedDate;
 	}
 
