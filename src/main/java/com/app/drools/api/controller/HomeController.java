@@ -63,15 +63,19 @@ public class HomeController {
 			/* @ApiParam(value = "Value for Product Type", required = true) */
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
 			@RequestParam(required = true) String made, @RequestParam(value = "price", required = false) Integer price,
-			@RequestParam(value = "purchasedDate", required = false)  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")String purchasedDate) throws ParseException {
+			@RequestParam(value = "purchasedDate", required = false) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy") String purchasedDate)
+			throws ParseException {
 
 		Product product = new Product();
 		product.setType(type);
 		product.setQuality(quality);
 		product.setMade(made);
 		product.setPrice(price);
-		/*Date defaultDate=new SimpleDateFormat("").parse("00-00-0000");
-		product.setPurchasedDate(purchasedDate == null ?  defaultDate : purchasedDate);*/
+		/*
+		 * Date defaultDate=new SimpleDateFormat("").parse("00-00-0000");
+		 * product.setPurchasedDate(purchasedDate == null ? defaultDate :
+		 * purchasedDate);
+		 */
 		product.setPurchasedDate(purchasedDate);
 		System.out.println("Date Printing" + product.getPurchasedDate());
 
@@ -92,49 +96,53 @@ public class HomeController {
 
 	@PostMapping(value = "/getDiscount/type/product")
 	public Product save(@RequestBody Product product) {
-		
 
 		return productService.save(product);
 	}
 
 	@GetMapping(value = "getDiscount/type/products")
-	public List<Product> getAllProduct() {
-		
-		 List<Product> product=productService.findAll();
-		 
-		 for(Product prd:product) {
-			 
-			productService.applyDiscount(prd);
+	public List<ProductResponse> getAllProduct() {
+
+		List<Product> inputProducts = productService.findAll();
+		List<ProductResponse> outputAfterRulefire = new ArrayList<>();
+
+		for (Product product : inputProducts) {
+
+			productService.applyDiscount(product);
+			// productService.getRuleIdList();
 			List<Integer> ruleIdList = productService.getRuleIdList();
-			
-		 }
-		
-	//	 System.out.println("product" +product);
-		 
-		 return product;
+			ProductResponse response = new ProductResponse();
+			response.setType(product.getType());
+			response.setQuality(product.getQuality());
+			response.setMade(product.getMade());
+			response.setPrice(product.getPrice());
+			response.setPurchasedDate(product.getPurchasedDate());
+			response.setDiscount(product.getDiscount());
+			response.setRule(ruleIdList);
+			outputAfterRulefire.add(response);
+		}
+
+		// System.out.println("product" +product);
+
+		return outputAfterRulefire;
 	}
 
-	
-	  @InitBinder public void initBinder(final WebDataBinder binder) {
-	  
-	  final SimpleDateFormat dateFormat=new SimpleDateFormat("dd-MM-yyyy");
-	 dateFormat.setLenient(false); binder.registerCustomEditor(Date.class, new
-	  CustomDateEditor(dateFormat,true)); }
-	 
-	/*@InitBinder
-	public void initBinder(WebDataBinder binder) throws Exception {
-		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		final CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if ("today".equals(text)) {
-					setValue(null);
-				} else {
-					super.setAsText(text);
-				}
-			}
-		};
-		binder.registerCustomEditor(Date.class, dateEditor);
-	}*/
+	@InitBinder
+	public void initBinder(final WebDataBinder binder) {
+
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		dateFormat.setLenient(false);
+		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+	}
+
+	/*
+	 * @InitBinder public void initBinder(WebDataBinder binder) throws Exception {
+	 * final DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); final
+	 * CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
+	 * 
+	 * @Override public void setAsText(String text) throws IllegalArgumentException
+	 * { if ("today".equals(text)) { setValue(null); } else { super.setAsText(text);
+	 * } } }; binder.registerCustomEditor(Date.class, dateEditor); }
+	 */
 
 }
