@@ -16,30 +16,45 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
 
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/getDiscount")
 public class HomeController {
+	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
 	@Autowired
 	private ProductService productService;
+
+	@PostConstruct
+	void started() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
+	}
 
 	private AgendaEventListener trackingAgendaEventListener;
 
@@ -51,19 +66,12 @@ public class HomeController {
 
 	}
 
-	// before
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=140&purchasedDate=12-1-2014
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=260&purchasedDate=12-1-2014
-	// after
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=240&purchasedDate=5-5-2018
-	// equal
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=300&purchasedDate=8-11-2010
-	@GetMapping(value = "/getDiscount/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<ProductResponse> getDiscount(
 			/* @ApiParam(value = "Value for Product Type", required = true) */
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
 			@RequestParam(required = true) String made, @RequestParam(value = "price", required = false) Integer price,
-			@RequestParam(value = "purchasedDate", required = false) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy") String purchasedDate)
+			@RequestParam(value = "purchasedDate", required = false) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy") Date purchasedDate)
 			throws ParseException {
 
 		Product product = new Product();
@@ -71,11 +79,7 @@ public class HomeController {
 		product.setQuality(quality);
 		product.setMade(made);
 		product.setPrice(price);
-		/*
-		 * Date defaultDate=new SimpleDateFormat("").parse("00-00-0000");
-		 * product.setPurchasedDate(purchasedDate == null ? defaultDate :
-		 * purchasedDate);
-		 */
+
 		product.setPurchasedDate(purchasedDate);
 		System.out.println("Date Printing" + product.getPurchasedDate());
 
@@ -94,15 +98,19 @@ public class HomeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/getDiscount/type/product")
-	public Product save(@RequestBody Product product) {
+	@RequestMapping(value = "/type/product", method = RequestMethod.POST)
+	public ResponseEntity<List<Product>> save(@RequestBody List<Product> product) {
+		long beginTime = System.nanoTime();
+		List<Product> saveProducts = productService.save(product);
+		long responseTime = System.nanoTime() - beginTime;
+		logger.info("Response time for the call was " + responseTime);
 
-		return productService.save(product);
+		return new ResponseEntity<>(saveProducts, HttpStatus.CREATED);
 	}
 
-	@GetMapping(value = "getDiscount/type/products")
+	@RequestMapping(value = "/type/product", method = RequestMethod.GET)
 	public List<ProductResponse> getAllProduct() {
-
+		long beginTime = System.nanoTime();
 		List<Product> inputProducts = productService.findAll();
 		List<ProductResponse> outputAfterRulefire = new ArrayList<>();
 
@@ -123,6 +131,8 @@ public class HomeController {
 		}
 
 		// System.out.println("product" +product);
+		long responseTime = System.nanoTime() - beginTime;
+		logger.info("Response time for the call was " + responseTime);
 
 		return outputAfterRulefire;
 	}
@@ -134,15 +144,5 @@ public class HomeController {
 		dateFormat.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
-
-	/*
-	 * @InitBinder public void initBinder(WebDataBinder binder) throws Exception {
-	 * final DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); final
-	 * CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
-	 * 
-	 * @Override public void setAsText(String text) throws IllegalArgumentException
-	 * { if ("today".equals(text)) { setValue(null); } else { super.setAsText(text);
-	 * } } }; binder.registerCustomEditor(Date.class, dateEditor); }
-	 */
 
 }

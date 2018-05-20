@@ -10,7 +10,9 @@ public interface ProductService {
     
     List<Integer> getRuleIdList();
     
-public Product save(Product product);
+public List<Product> save(List<Product> product);
+
+
 	
 	public List<Product> findAll();
 }
