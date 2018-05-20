@@ -23,23 +23,30 @@ import javax.annotation.PostConstruct;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.Match;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/getDiscount")
 public class HomeController {
+	private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
 	@Autowired
 	private ProductService productService;
@@ -48,6 +55,7 @@ public class HomeController {
 	void started() {
 		TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
 	}
+
 	private AgendaEventListener trackingAgendaEventListener;
 
 	// private FactHandle fact;
@@ -58,8 +66,7 @@ public class HomeController {
 
 	}
 
-	
-	@GetMapping(value = "/getDiscount/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<ProductResponse> getDiscount(
 			/* @ApiParam(value = "Value for Product Type", required = true) */
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
@@ -72,7 +79,7 @@ public class HomeController {
 		product.setQuality(quality);
 		product.setMade(made);
 		product.setPrice(price);
-		
+
 		product.setPurchasedDate(purchasedDate);
 		System.out.println("Date Printing" + product.getPurchasedDate());
 
@@ -91,15 +98,19 @@ public class HomeController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	@PostMapping(value = "/getDiscount/type/product")
+	@RequestMapping(value = "/type/product", method = RequestMethod.POST)
 	public ResponseEntity<List<Product>> save(@RequestBody List<Product> product) {
+		long beginTime = System.nanoTime();
+		List<Product> saveProducts = productService.save(product);
+		long responseTime = System.nanoTime() - beginTime;
+		logger.info("Response time for the call was " + responseTime);
 
-		return  new ResponseEntity<>(productService.save(product),HttpStatus.CREATED);
+		return new ResponseEntity<>(saveProducts, HttpStatus.CREATED);
 	}
 
-	@GetMapping(value = "getDiscount/type/product")
+	@RequestMapping(value = "/type/product", method = RequestMethod.GET)
 	public List<ProductResponse> getAllProduct() {
-
+		long beginTime = System.nanoTime();
 		List<Product> inputProducts = productService.findAll();
 		List<ProductResponse> outputAfterRulefire = new ArrayList<>();
 
@@ -120,6 +131,8 @@ public class HomeController {
 		}
 
 		// System.out.println("product" +product);
+		long responseTime = System.nanoTime() - beginTime;
+		logger.info("Response time for the call was " + responseTime);
 
 		return outputAfterRulefire;
 	}
@@ -131,7 +144,5 @@ public class HomeController {
 		dateFormat.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
-
-
 
 }
