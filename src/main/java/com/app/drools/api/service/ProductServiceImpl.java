@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
 		
 		kSession.addEventListener(trackingAgendaEventListener);
 		int firedRules = kSession.fireAllRules();
-		System.out.println(" Total number of Fired Rules are : " + firedRules);
+		//System.out.println(" Total number of Fired Rules are : " + firedRules);
 
 		ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
 
@@ -54,15 +54,20 @@ public class ProductServiceImpl implements ProductService {
 		return ruleIdList;
 	}
 
-	@Override
+	/*@Override
 	public Product save(Product product) {
 		
 		return productRepo.save(product);
 		
-	}
+	}*/
 
 	@Override
 	public List<Product> findAll() {
 		return productRepo.findAll();
+	}
+
+	@Override
+	public List<Product> save(List<Product> product) {
+		return productRepo.save(product);
 	}
 }

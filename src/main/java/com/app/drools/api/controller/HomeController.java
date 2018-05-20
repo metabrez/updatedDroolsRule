@@ -16,6 +16,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
 
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.runtime.rule.FactHandle;
@@ -41,6 +44,10 @@ public class HomeController {
 	@Autowired
 	private ProductService productService;
 
+	@PostConstruct
+	void started() {
+		TimeZone.setDefault(TimeZone.getTimeZone("Etc/UTC"));
+	}
 	private AgendaEventListener trackingAgendaEventListener;
 
 	// private FactHandle fact;
@@ -51,19 +58,13 @@ public class HomeController {
 
 	}
 
-	// before
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=140&purchasedDate=12-1-2014
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=260&purchasedDate=12-1-2014
-	// after
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=240&purchasedDate=5-5-2018
-	// equal
-	// http://localhost:8080/app/drools/api/getDiscount/type?type=diamond&quality=a&made=uk&price=300&purchasedDate=8-11-2010
+	
 	@GetMapping(value = "/getDiscount/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<ProductResponse> getDiscount(
 			/* @ApiParam(value = "Value for Product Type", required = true) */
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
 			@RequestParam(required = true) String made, @RequestParam(value = "price", required = false) Integer price,
-			@RequestParam(value = "purchasedDate", required = false) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy") String purchasedDate)
+			@RequestParam(value = "purchasedDate", required = false) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy") Date purchasedDate)
 			throws ParseException {
 
 		Product product = new Product();
@@ -71,11 +72,7 @@ public class HomeController {
 		product.setQuality(quality);
 		product.setMade(made);
 		product.setPrice(price);
-		/*
-		 * Date defaultDate=new SimpleDateFormat("").parse("00-00-0000");
-		 * product.setPurchasedDate(purchasedDate == null ? defaultDate :
-		 * purchasedDate);
-		 */
+		
 		product.setPurchasedDate(purchasedDate);
 		System.out.println("Date Printing" + product.getPurchasedDate());
 
@@ -95,12 +92,12 @@ public class HomeController {
 	}
 
 	@PostMapping(value = "/getDiscount/type/product")
-	public Product save(@RequestBody Product product) {
+	public ResponseEntity<List<Product>> save(@RequestBody List<Product> product) {
 
-		return productService.save(product);
+		return  new ResponseEntity<>(productService.save(product),HttpStatus.CREATED);
 	}
 
-	@GetMapping(value = "getDiscount/type/products")
+	@GetMapping(value = "getDiscount/type/product")
 	public List<ProductResponse> getAllProduct() {
 
 		List<Product> inputProducts = productService.findAll();
@@ -135,14 +132,6 @@ public class HomeController {
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
 	}
 
-	/*
-	 * @InitBinder public void initBinder(WebDataBinder binder) throws Exception {
-	 * final DateFormat df = new SimpleDateFormat("yyyy-MM-dd"); final
-	 * CustomDateEditor dateEditor = new CustomDateEditor(df, true) {
-	 * 
-	 * @Override public void setAsText(String text) throws IllegalArgumentException
-	 * { if ("today".equals(text)) { setValue(null); } else { super.setAsText(text);
-	 * } } }; binder.registerCustomEditor(Date.class, dateEditor); }
-	 */
+
 
 }
