@@ -66,9 +66,9 @@ public class HomeController {
 
 	}
 
-	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+/*	@GetMapping(value = "/type", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<ProductResponse> getDiscount(
-			/* @ApiParam(value = "Value for Product Type", required = true) */
+			 @ApiParam(value = "Value for Product Type", required = true) 
 			@RequestParam(required = true) String type, @RequestParam(required = true) String quality,
 			@RequestParam(required = true) String made, @RequestParam(value = "price", required = false) Integer price,
 			@RequestParam(value = "purchasedDate", required = false) @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy") Date purchasedDate)
@@ -96,13 +96,13 @@ public class HomeController {
 		response.setRule(ruleIdList);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
+	}*/
 
 	@RequestMapping(value = "/type/product", method = RequestMethod.POST)
 	public ResponseEntity<List<Product>> save(@RequestBody List<Product> product) {
-		long beginTime = System.nanoTime();
+		long beginTime = System.currentTimeMillis();
 		List<Product> saveProducts = productService.save(product);
-		long responseTime = System.nanoTime() - beginTime;
+		long responseTime = System.currentTimeMillis() - beginTime;
 		logger.info("Response time for the call was " + responseTime);
 
 		return new ResponseEntity<>(saveProducts, HttpStatus.CREATED);
@@ -110,13 +110,13 @@ public class HomeController {
 
 	@RequestMapping(value = "/type/product", method = RequestMethod.GET)
 	public List<ProductResponse> getAllProduct() {
-		long beginTime = System.nanoTime();
+		long beginTime = System.currentTimeMillis();
 		List<Product> inputProducts = productService.findAll();
 		List<ProductResponse> outputAfterRulefire = new ArrayList<>();
-
+		productService.applyDiscount(inputProducts);
+		int i = 0;
 		for (Product product : inputProducts) {
-
-			productService.applyDiscount(product);
+			
 			// productService.getRuleIdList();
 			List<Integer> ruleIdList = productService.getRuleIdList();
 			ProductResponse response = new ProductResponse();
@@ -131,7 +131,7 @@ public class HomeController {
 		}
 
 		// System.out.println("product" +product);
-		long responseTime = System.nanoTime() - beginTime;
+		long responseTime = System.currentTimeMillis() - beginTime;
 		logger.info("Response time for the call was " + responseTime);
 
 		return outputAfterRulefire;

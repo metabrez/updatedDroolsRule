@@ -7,11 +7,13 @@ import com.app.drools.api.repo.ProductRepo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kie.api.command.Command;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.internal.utils.KieService;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
+import org.kie.internal.command.CommandFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,21 +33,23 @@ public class ProductServiceImpl implements ProductService {
 
 	}
 
-	@Override
-	public void applyDiscount(Product product) {
+	
+	public void applyDiscount(List<Product> inputProducts) {
 		KieSession kSession = kieContainer.newKieSession("ksession-rule");
 		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
 		
-		kSession.insert(product);
-		// read excel data (date) from kSession and compare with product.purchaseDate.
+		
+		kSession.execute(CommandFactory.newInsertElements(inputProducts));
+		//kSession.insert(product);
+		
 		
 		kSession.addEventListener(trackingAgendaEventListener);
-		int firedRules = kSession.fireAllRules();
-		//System.out.println(" Total number of Fired Rules are : " + firedRules);
-
-		ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
+		kSession.fireAllRules();
+		
+		//List<List<Integer>> ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
 
 		kSession.dispose();
+				
 
 	}
 
