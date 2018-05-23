@@ -34,19 +34,19 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	
-	public void applyDiscount(List<Product> inputProducts) {
+	public void applyDiscount(Product product) {
 		KieSession kSession = kieContainer.newKieSession("ksession-rule");
 		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
 		
 		
-		kSession.execute(CommandFactory.newInsertElements(inputProducts));
-		//kSession.insert(product);
+		//kSession.execute(CommandFactory.newInsertElements(inputProducts));
+		kSession.insert(product);
 		
 		
 		kSession.addEventListener(trackingAgendaEventListener);
 		kSession.fireAllRules();
 		
-		//List<List<Integer>> ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
+		 ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
 
 		kSession.dispose();
 				

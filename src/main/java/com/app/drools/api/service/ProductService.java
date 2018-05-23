@@ -6,7 +6,7 @@ import com.app.drools.api.model.Product;
 
 public interface ProductService {
 
-    void applyDiscount(List<Product> inputProducts);
+    void applyDiscount(Product product);
     
     List<Integer> getRuleIdList();
     
