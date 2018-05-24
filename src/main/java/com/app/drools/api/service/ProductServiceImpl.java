@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
 	}
 
-	
+	@Override
 	public void applyDiscount(Product product) {
 		KieSession kSession = kieContainer.newKieSession("ksession-rule");
 		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
