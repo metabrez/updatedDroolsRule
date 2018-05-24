@@ -82,9 +82,6 @@ public class ProductServiceImpl implements ProductService {
 		KieSession kSession = kieContainer.newKieSession("ksession-rule");
 		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
 		
-		//List<ProductResponse> outputAfterRulefire = new ArrayList<>();
-		//kSession.execute(CommandFactory.newInsertElements(inputProducts));
-		int count=0;
 		for(Product daru: products) {
 			kSession.insert(daru);
 		}
