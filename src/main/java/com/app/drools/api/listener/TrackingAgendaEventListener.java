@@ -39,9 +39,6 @@ public class TrackingAgendaEventListener extends DefaultAgendaEventListener {
 		
 		String ruleName = rule.getName();
 		String idName=rule.getId();
-		//activationList.add(ruleName);
-		//System.out.println(idName);
-		//System.out.println();
 
 		Map<String, Object> ruleMetaDataMap = rule.getMetaData();
 

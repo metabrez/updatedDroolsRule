@@ -2,16 +2,19 @@ package com.app.drools.api.service;
 
 import com.app.drools.api.listener.TrackingAgendaEventListener;
 import com.app.drools.api.model.Product;
+import com.app.drools.api.model.ProductResponse;
 import com.app.drools.api.repo.ProductRepo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kie.api.command.Command;
 import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.internal.utils.KieService;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.Match;
+import org.kie.internal.command.CommandFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
 	// private final KieSession kSession;
 
 	private List<Integer> ruleIdList;
+	private List<ProductResponse> outputAfterRulefire;
 
 	@Autowired
 	public ProductServiceImpl(KieContainer kieContainer) {
@@ -36,16 +40,18 @@ public class ProductServiceImpl implements ProductService {
 		KieSession kSession = kieContainer.newKieSession("ksession-rule");
 		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
 		
+		
+		//kSession.execute(CommandFactory.newInsertElements(inputProducts));
 		kSession.insert(product);
-		// read excel data (date) from kSession and compare with product.purchaseDate.
+		
 		
 		kSession.addEventListener(trackingAgendaEventListener);
-		int firedRules = kSession.fireAllRules();
-		//System.out.println(" Total number of Fired Rules are : " + firedRules);
-
-		ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
+		kSession.fireAllRules();
+		
+		 ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
 
 		kSession.dispose();
+				
 
 	}
 
@@ -70,4 +76,46 @@ public class ProductServiceImpl implements ProductService {
 	public List<Product> save(List<Product> product) {
 		return productRepo.save(product);
 	}
+
+	@Override
+	public void applyDiscount(List<Product> products) {
+		KieSession kSession = kieContainer.newKieSession("ksession-rule");
+		AgendaEventListener trackingAgendaEventListener = new TrackingAgendaEventListener();
+		
+		//List<ProductResponse> outputAfterRulefire = new ArrayList<>();
+		//kSession.execute(CommandFactory.newInsertElements(inputProducts));
+		int count=0;
+		for(Product daru: products) {
+			kSession.insert(daru);
+		}
+		
+		
+		
+		kSession.addEventListener(trackingAgendaEventListener);
+		kSession.fireAllRules();
+		outputAfterRulefire = new ArrayList<>();
+		for (Product product : products) {
+			
+			//List<Integer> ruleIdList = productService.getRuleIdList();
+			
+			ProductResponse response = new ProductResponse();
+			response.setType(product.getType());
+			response.setQuality(product.getQuality());
+			response.setMade(product.getMade());
+			response.setPrice(product.getPrice());
+			response.setPurchasedDate(product.getPurchasedDate());
+			response.setDiscount(product.getDiscount());
+			//response.setRule(ruleIdList);
+			outputAfterRulefire.add(response);
+		}
+		
+		 ruleIdList = ((TrackingAgendaEventListener) trackingAgendaEventListener).getRuleId();
+//System.out.println("RuleID...." +ruleIdList);
+		kSession.dispose();
+		
+	}
+	public List<ProductResponse> getOutputAfterRulefire(){
+		return outputAfterRulefire;
+	}
+	
 }
