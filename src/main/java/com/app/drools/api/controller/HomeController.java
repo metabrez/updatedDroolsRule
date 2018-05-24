@@ -113,9 +113,11 @@ public class HomeController {
 		long beginTime = System.currentTimeMillis();
 		List<Product> inputProducts = productService.findAll();
 		List<ProductResponse> outputAfterRulefire = new ArrayList<>();
-		//productService.applyDiscount(inputProducts);
-		//int i = 0;
-		for (Product product : inputProducts) {
+		
+		productService.applyDiscount(inputProducts);
+		outputAfterRulefire=productService.getOutputAfterRulefire();
+		
+		/*for (Product product : inputProducts) {
 			productService.applyDiscount(product);
 			//productService.getRuleIdList();
 			List<Integer> ruleIdList = productService.getRuleIdList();
@@ -129,7 +131,7 @@ public class HomeController {
 			response.setDiscount(product.getDiscount());
 			response.setRule(ruleIdList);
 			outputAfterRulefire.add(response);
-		}
+		}*/
 
 		// System.out.println("product" +product);
 		long responseTime = System.currentTimeMillis() - beginTime;
